@@ -154,6 +154,41 @@ $form = $this->beginWidget('CActiveForm', array(
                             </div>
 
                             <div class="control-group">
+                                <?php echo $form->labelEx($modelStudentIdentification, 'filiation_1_rg', array('class' => 'control-label')); ?>
+                                <div class="controls">
+                                    <?php echo $form->textField($modelStudentIdentification, 'filiation_1_rg', array('size' => 60, 'maxlength' => 45)); ?>
+                                    <?php echo $form->error($modelStudentIdentification, 'filiation_1_rg'); ?>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <?php echo $form->labelEx($modelStudentIdentification, 'filiation_1_cpf', array('class' => 'control-label')); ?>
+                                <div class="controls">
+                                    <?php echo $form->textField($modelStudentIdentification, 'filiation_1_cpf', array('size' => 60, 'maxlength' => 14)); ?>
+                                    <?php echo $form->error($modelStudentIdentification, 'filiation_1_cpf'); ?>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <?php echo $form->labelEx($modelStudentIdentification, 'filiation_1_scholarity', array('class' => 'control-label')); ?>
+                                <div class="controls">
+                                    <?php
+                                    echo $form->dropDownList($modelStudentIdentification, 'filiation_1_scholarity', array(0 => 'Não sabe ler e escrever ', 1 => 'Sabe ler e escrever', 2 => 'Ens. Fund. Incompleto',
+                                        3 => 'Ens. Fund. Completo', 4 => 'Ens. Médio Incompleto', 5 => 'Ens. Médio Completo',
+                                        6 => 'Ens. Sup. Incompleto', 7 => 'Ens. Sup. Completo'), array('class' => 'select-search-off'));
+                                    ?>
+                                    <?php echo $form->error($modelStudentIdentification, 'filiation_1_scholarity'); ?>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <?php echo $form->labelEx($modelStudentIdentification, 'filiation_1_job', array('class' => 'control-label')); ?>
+                                <div class="controls">
+                                    <?php echo $form->textField($modelStudentIdentification, 'filiation_1_job', array('size' => 60, 'maxlength' => 100)); ?>
+                                    <?php echo $form->error($modelStudentIdentification, 'filiation_1_job'); ?>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
                                 <?php echo $form->labelEx($modelStudentIdentification, 'filiation_2', array('class' => 'control-label')); ?>
                                 <div class="controls">
                                     <?php echo $form->textField($modelStudentIdentification, 'filiation_2', array('size' => 60, 'maxlength' => 100, "disabled" => "disabled")); ?>
@@ -162,6 +197,41 @@ $form = $this->beginWidget('CActiveForm', array(
                                         data-toggle="tooltip" data-placement="top"
                                         data-original-title="<?php echo Yii::t('help', 'Full name'); ?>"><i></i></span>
                                         <?php echo $form->error($modelStudentIdentification, 'filiation_2'); ?>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <?php echo $form->labelEx($modelStudentIdentification, 'filiation_2_rg', array('class' => 'control-label')); ?>
+                                <div class="controls">
+                                    <?php echo $form->textField($modelStudentIdentification, 'filiation_2_rg', array('size' => 60, 'maxlength' => 45)); ?>
+                                    <?php echo $form->error($modelStudentIdentification, 'filiation_2_rg'); ?>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <?php echo $form->labelEx($modelStudentIdentification, 'filiation_2_cpf', array('class' => 'control-label')); ?>
+                                <div class="controls">
+                                    <?php echo $form->textField($modelStudentIdentification, 'filiation_2_cpf', array('size' => 60, 'maxlength' => 14)); ?>
+                                    <?php echo $form->error($modelStudentIdentification, 'filiation_2_cpf'); ?>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <?php echo $form->labelEx($modelStudentIdentification, 'filiation_2_scholarity', array('class' => 'control-label')); ?>
+                                <div class="controls">
+                                    <?php
+                                    echo $form->dropDownList($modelStudentIdentification, 'filiation_2_scholarity', array(0 => 'Não sabe ler e escrever ', 1 => 'Sabe ler e escrever', 2 => 'Ens. Fund. Incompleto',
+                                        3 => 'Ens. Fund. Completo', 4 => 'Ens. Médio Incompleto', 5 => 'Ens. Médio Completo',
+                                        6 => 'Ens. Sup. Incompleto', 7 => 'Ens. Sup. Completo'), array('class' => 'select-search-off'));
+                                    ?>
+                                    <?php echo $form->error($modelStudentIdentification, 'filiation_2_scholarity'); ?>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <?php echo $form->labelEx($modelStudentIdentification, 'filiation_2_job', array('class' => 'control-label')); ?>
+                                <div class="controls">
+                                    <?php echo $form->textField($modelStudentIdentification, 'filiation_2_job', array('size' => 60, 'maxlength' => 100)); ?>
+                                    <?php echo $form->error($modelStudentIdentification, 'filiation_2_job'); ?>
                                 </div>
                             </div>
 
@@ -1101,7 +1171,7 @@ $form = $this->beginWidget('CActiveForm', array(
                                             <tr>
                                                 <td><?php echo $me->schoolInepIdFk->name ?></td>
                                                 <td style="text-align: center">
-                                                    <?php  if( $me->classroomFk->school_year == date(Y)){?>
+                                                    <?php  if( $me->classroomFk->school_year >= date('Y')){?>
                                                         <a href='<?php  echo @Yii::app()->createUrl('enrollment/update', array('id' => $me->id));?>'>
                                                             <i class="fa fa-pencil" style="color:#496cad; padding-right: 1%" ></i>
                                                             <?php echo $me->classroomFk->name ?></a>
@@ -1159,10 +1229,21 @@ $form = $this->beginWidget('CActiveForm', array(
                                                             $link = Yii::app()->createUrl('forms/'.$form['action'], array('type'=>$type, 'enrollment_id' => $me->id));
                                                             echo "<li><a target='_blank' href=".$link.">".$form['name']."</a></li>";
                                                         }
+                                                        if($me->classroomFk->school_year == date('Y')){
+                                                            $date = date('Y-m-d');
+                                                            $quizs = Quiz::model()->findAll('status=1 AND init_date <=:init_date AND final_date >=:final_date', [':init_date' => $date, ':final_date' => $date]);
+                                                            if(count($quizs) > 0){
+                                                                foreach ($quizs as $quiz) {
+                                                                    $link = Yii::app()->createUrl('quiz/default/answer', array('quizId'=>$quiz->id, 'studentId' => $me->studentFk->id));
+                                                                    echo "<li><a target='_blank' href=".$link.">".$quiz->name."</a></li>";
+                                                                }
+                                                            }
+
+                                                        }
                                                         ?>
                                                 </td>
                                                 <td style="text-align: center">
-                                                    <?php  if( $me->classroomFk->school_year == date(Y)){?>
+                                                    <?php  if( $me->classroomFk->school_year >= date('Y')){?>
                                                         <a href='<?php echo @Yii::app()->createUrl('enrollment/delete', array('id' => $me->id)) ?>'><i class="fa fa-trash-o"></i></a>
                                                     <?php }else{ ?>
                                                         <i class="fa fa-minus" title="Não é possível cancelar a Matrícula do ano anterior"></i>
@@ -1184,6 +1265,12 @@ $form = $this->beginWidget('CActiveForm', array(
         </div>
     </div>
 </div>
+
+<?php
+    if(isset($_GET['censo']) && isset($_GET['id'])){
+       $this->widget('application.widgets.AlertCensoWidget', array('prefix' => 'student', 'dataId' => $_GET['id']));
+    }
+?>
 
 <script type="text/javascript">
     var formIdentification = '#StudentIdentification_';

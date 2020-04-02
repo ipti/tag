@@ -219,7 +219,11 @@ class Classroom extends AltActiveRecord {
             'discipline_others' => Yii::t('default', 'Discipline Others'),
             'school_year' => Yii::t('default', 'School Year'),
             'turn' => Yii::t('default', 'Turn'),
-            'create_date' => Yii::t('default', 'Create Time')
+            'create_date' => Yii::t('default', 'Create Time'),
+            // Support Labels 
+            'disciplines' => Yii::t('default', 'Disciplines'),
+            'classroom_days' => Yii::t('default', 'Classsrom Days'),
+            'stage' => Yii::t('default', 'Stage')
         );
     }
 
@@ -352,6 +356,13 @@ class Classroom extends AltActiveRecord {
             }
         }
         return $workingHours;
+    }
+
+
+    public function getWorkingDaysByDiscipline($discipline){
+        /* @var $schoolConfiguration SchoolConfiguration */
+        $model = WorkByDiscipline::model()->find('classroom_fk=:classroom_fk AND discipline_fk=:discipline_fk', array(':classroom_fk' => $this->id, ':discipline_fk' => $discipline));
+        return $model->school_days;
     }
 
     /**

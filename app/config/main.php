@@ -19,6 +19,7 @@ return array(
         'application.components.*',
         'application.modules.wizard.models.*',
         'application.modules.calendar.models.*',
+        'application.modules.quiz.models.*',
     ),
     'modules' => array(
         // uncomment the following to enable the Gii tool
@@ -37,12 +38,16 @@ return array(
         'calendar',
         'timesheet',
         'curricularmatrix',
+        'quiz'
     ),
     // application components
     'components' => array(
         'user' => array(
             // enable cookie-based authentication
             'allowAutoLogin' => true,
+        ),
+        'cache'=>array( 
+            'class'=>'system.caching.CDbCache'
         ),
         // uncomment the following to enable URLs in path-format
         'urlManager' => array(
@@ -76,6 +81,10 @@ return array(
                 'boletim-escolar/<action:\w+>'              => 'schoolreport/default/<action>',
                 'boletim-escolar/<action:\w+>/<eid:\d+>'    => 'schoolreport/default/<action>',
 
+                'questionario/'                               => 'quiz/',
+                'questionario/<action:\w+>'                   => 'quiz/default/<action>',
+                'questionario/<action:\w+>/<id:\d+>'          => 'quiz/default/<action>',
+
                 '<controller:\w+>/<id:\d+>'                 => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>'    => '<controller>/<action>',
                 '<controller:\w+>/<action:\w+>'             => '<controller>/<action>',
@@ -85,6 +94,7 @@ return array(
 
                 'gestao-resultados/escola/<action:\w+>'         => 'resultsmanagement/managementschool/<action>',
                 'gestao-resultados/escola/<action:\w+>/<sid:\d+>'=> 'resultsmanagement/managementschool/<action>',
+
             ),
         ),
         // uncomment the following to use a MySQL database

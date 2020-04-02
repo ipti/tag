@@ -95,18 +95,7 @@ $disciplineDiversifiedCount = count($disciplines['diversified']) + 1;
 
 ?>
 
-<div class="row-fluid hidden-print">
-    <div class="span12">
-        <div class="buttons">
-            <a id="print" class='btn btn-icon glyphicons print hidden-print'><?php echo Yii::t('default', 'Print') ?>
-                <i></i>
-            </a>
-        </div>
-    </div>
-</div>
-
-
-<div class="innerLR boquim">
+<div class="pageA4V">
     <div>
         <br>
 

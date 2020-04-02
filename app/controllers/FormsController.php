@@ -1,5 +1,7 @@
 <?php
 
+
+
 class FormsController extends Controller {
 
     public $layout = 'fullmenu';
@@ -9,7 +11,7 @@ class FormsController extends Controller {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array('index', 'EnrollmentGradesReport', 'StudentsFileReport','EnrollmentDeclarationReport',
-
+                    'EnrollmentGradesReportBoquim','EnrollmentGradesReportBoquimCiclo',
                     'GetEnrollmentDeclarationInformation','TransferRequirement','GetTransferRequirementInformation',
                     'EnrollmentNotification','GetEnrollmentNotificationInformation','StudentsDeclarationReport',
                     'GetStudentsFileInformation','AtaSchoolPerformance','StudentFileForm',
@@ -31,6 +33,16 @@ class FormsController extends Controller {
         $this->layout = "reports";
         $enrollment = StudentEnrollment::model()->findByPk($enrollment_id);
         $this->render('EnrollmentGradesReport', array('enrollment'=>$enrollment));
+    }
+    public function actionEnrollmentGradesReportBoquim($enrollment_id) {
+        $this->layout = "reports";
+        $enrollment = StudentEnrollment::model()->findByPk($enrollment_id);
+        $this->render('EnrollmentGradesReportBoquim', array('enrollment'=>$enrollment));
+    }
+    public function actionEnrollmentGradesReportBoquimCiclo($enrollment_id) {
+        $this->layout = "reports";
+        $enrollment = StudentEnrollment::model()->findByPk($enrollment_id);
+        $this->render('EnrollmentGradesReportBoquimCiclo', array('enrollment'=>$enrollment));
     }
 
     public function actionStudentsFileReport($enrollment_id) {
@@ -94,8 +106,9 @@ class FormsController extends Controller {
     }
 
     public function actionStudentsDeclarationReport($enrollment_id) {
+
         $this->layout = "reports";
-        $sql = "SELECT * FROM studentsdeclaration WHERE student_id = ".$enrollment_id." AND `year`  = ".$this->year.";";
+        $sql = "SELECT * FROM studentsdeclaration WHERE enrollment_id = ".$enrollment_id;
         $result = Yii::app()->db->createCommand($sql)->queryRow();
         $this->render('StudentsDeclarationReport', array(
             'report' => $result
@@ -111,27 +124,62 @@ class FormsController extends Controller {
     public function actionAtaSchoolPerformance($id) {
         $this->layout = "reports";
         $sql = "SELECT * FROM ata_performance
-                    where `year`  = " . $this->year . ""
-            . " AND classroom_id = $id;";
+                    where `school_year` = " . $this->year . ""
+            . " AND classroom_id = $id  AND (status = 1 OR status IS NULL);";
         $result = Yii::app()->db->createCommand($sql)->queryRow();
         setlocale(LC_ALL, NULL);
         setlocale(LC_ALL, "pt_BR.utf8", "pt_BR", "ptb", "ptb.utf8");
         $time = mktime(0, 0, 0, $result['month']);
         $result['month'] = strftime("%B", $time);
 
+        $disciplines = Yii::app()->db->createCommand(
+            "select * from ((select c.`id` as 'classroom_id', d.id as 'discipline_id', d.`name` as 'discipline_name'
+
+                from `edcenso_discipline` as `d`
+                JOIN `instructor_teaching_data` `t` ON 
+                        (`t`.`discipline_1_fk` = `d`.`id` 
+                        || `t`.`discipline_2_fk` = `d`.`id` 
+                        || `t`.`discipline_3_fk` = `d`.`id`
+                        || `t`.`discipline_4_fk` = `d`.`id`
+                        || `t`.`discipline_5_fk` = `d`.`id`
+                        || `t`.`discipline_6_fk` = `d`.`id`
+                        || `t`.`discipline_7_fk` = `d`.`id`
+                        || `t`.`discipline_8_fk` = `d`.`id`
+                        || `t`.`discipline_9_fk` = `d`.`id`
+                        || `t`.`discipline_10_fk` = `d`.`id`
+                        || `t`.`discipline_11_fk` = `d`.`id`
+                        || `t`.`discipline_12_fk` = `d`.`id`
+                        || `t`.`discipline_13_fk` = `d`.`id`)
+                join `classroom` as `c` on (c.id = t.classroom_id_fk)
+            ) union (
+                select c.`id` as 'classroom_id', d.id as 'discipline_id', d.`name` as 'discipline_name'
+                from `classroom` as `c`
+                        join `class_board` as `cb` on (c.id = cb.classroom_fk)
+                        join `edcenso_discipline` as `d` on (d.id = cb.discipline_fk)
+            )) as classroom_disciplines
+            where classroom_id = " . $id)->queryAll();
+
         $classroom = Classroom::model()->findByPk($id);
+
+        foreach($disciplines as $key => $value){
+            if($value == 1){
+                $enableDisciplines[$key] = $disciplineLabels[$key];
+            }
+        }
+        
         $students = StudentEnrollment::model()->findAllByAttributes(array('classroom_fk' => $classroom->id));
 
         $this->render('AtaSchoolPerformance', array(
             'report' => $result,
             'classroom' => $classroom,
-            'students' => $students
+            'students' => $students,
+            'disciplines' => $disciplines
         ));
     }
 
     public function actionStudentFileForm($enrollment_id) {
         $this->layout = "reports";
-        $this->render('StudentFileForm', array('enrollment_id'=>$enrollment_id));
+        $this->render('StudentFileForm', array('enrollment_id'=>$enrollment_id,'studentinfo'=>$result));
     }
 
     public function actionStudentsFileForm($classroom_id) {

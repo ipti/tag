@@ -40,7 +40,7 @@ class ReportsController extends Controller {
                 join classroom as c on se.classroom_fk = c.id
                 join student_documents_and_address as sd on si.id = sd.id
                 where (se.public_transport = 1 or se.vehicle_type_bus=1) and si.school_inep_id_fk = ".$_GET['id']." AND se.school_inep_id_fk =  ".$_GET['id']."
-                AND c.school_year = ".$this->year." order by si.name";
+                AND c.school_year = ".$this->year." AND (se.status = 1 OR se.status IS NULL) order by si.name";
 
         $students = Yii::app()->db->createCommand($sql)->queryAll();
 
@@ -64,7 +64,7 @@ class ReportsController extends Controller {
 
         $sql = "SELECT si.*, se.classroom_fk
                 FROM student_identification as si join student_enrollment as se on si.id = se.student_fk join classroom as c on se.classroom_fk = c.id
-                where si.deficiency = 1 and si.school_inep_id_fk = ".$_GET['id']." and se.school_inep_id_fk = ".$_GET['id']." and c.school_year = ".$this->year." order by si.name";
+                where si.deficiency = 1 and si.school_inep_id_fk = ".$_GET['id']." and se.school_inep_id_fk = ".$_GET['id']." and c.school_year = ".$this->year." AND (se.status = 1 OR se.status IS NULL) order by si.name";
 
         $students = Yii::app()->db->createCommand($sql)->queryAll();
 
@@ -90,7 +90,7 @@ class ReportsController extends Controller {
                 from (student_identification as si join student_enrollment as se on si.id = se.student_fk)
                 join classroom_qtd_students as cq on cq.id = se.classroom_fk
                 where se.school_inep_id_fk = ".$_GET['id']."  AND si.school_inep_id_fk = ".$_GET['id']." AND cq.school_year = ".$this->year."
-                order by si.name";
+                AND (se.status = 1 OR se.status IS NULL)order by si.name";
 
         $students = Yii::app()->db->createCommand($sql)->queryAll();
 
@@ -105,7 +105,7 @@ class ReportsController extends Controller {
         $sql = "SELECT * FROM classroom_enrollment
                     where `year`  = ".$this->year.""
             . " AND classroom_id = $id"
-            . " ORDER BY name;";
+            . " AND (status = 1 OR status IS NULL) ORDER BY name;";
         $result = Yii::app()->db->createCommand($sql)->queryAll();
 
         $classroom = Classroom::model()->findByPk($id);
@@ -120,10 +120,14 @@ class ReportsController extends Controller {
         $school_id = Yii::app()->user->school;
         $school = SchoolIdentification::model()->findByPk($school_id);
         $ano = Yii::app()->user->year;
-        $sql1 = "SELECT *, d.name as nome_aluno FROM student_enrollment a JOIN classroom b on(a.`classroom_fk`=b.id) JOIN student_documents_and_address c on(a.`student_fk`=c.`id`)
-        JOIN student_identification d on(c.`id`=d.`id`) WHERE
-        received_cc = 0 or received_address = 0 or received_photo = 0 or received_nis = 0 or received_responsable_rg = 0 or
-        received_responsable_cpf = 0 and   b.`school_inep_fk` =" . $school_id . " and b.school_year=" . $ano . ";";
+        $sql1 = "SELECT *, d.name as nome_aluno
+                    FROM student_enrollment a 
+                    JOIN classroom b ON(a.`classroom_fk`=b.id) 
+                    JOIN student_documents_and_address c ON(a.`student_fk`=c.`id`) 
+                    JOIN student_identification d ON(c.`id`=d.`id`) 
+                    WHERE b.`school_inep_fk` =" . $school_id . " and b.school_year=" . $ano . " AND (a.status = 1 OR a.status IS NULL) AND 
+                    (received_cc = 0 OR received_address = 0 OR received_photo = 0 
+                    OR received_nis = 0 OR received_responsable_rg = 0 OR received_responsable_cpf = 0)";
         $result = Yii::app()->db->createCommand($sql1)->queryAll();
         $this->render('StudentPendingDocument', array(
             'report' => $result,
@@ -134,7 +138,7 @@ class ReportsController extends Controller {
         $sql = "SELECT * FROM classroom_enrollment
                     where `year`  = ".$this->year.""
             . " AND classroom_id = $id"
-            . " ORDER BY name;";
+            . " AND (status = 1 OR status IS NULL) ORDER BY name;";
 
         $result = Yii::app()->db->createCommand($sql)->queryAll();
 
@@ -159,9 +163,10 @@ class ReportsController extends Controller {
         $classrooms = Yii::app()->db->createCommand($sql)->queryAll();
 
         $sql1 = "SELECT DISTINCT se.classroom_fk,si.inep_id,si.name,si.birthday
-                FROM ((student_identification as si join student_enrollment as se on si.id = se.student_fk )
-                join classroom as c on se.classroom_fk = c.id)
-                where se.school_inep_id_fk = ".$_GET['id']." and c.school_year = ".$this->year." order by si.name" ;
+                FROM student_identification as si 
+                join student_enrollment as se on si.id = se.student_fk 
+                join classroom as c on se.classroom_fk = c.id
+                where se.school_inep_id_fk = ".$_GET['id']." and c.school_year = ".$this->year." AND (se.status = 1 OR se.status IS NULL) order by si.name" ;
 
         $students = Yii::app()->db->createCommand($sql1)->queryAll();
 
@@ -179,14 +184,14 @@ class ReportsController extends Controller {
         $sql = "select c.*, q.modality,q.stage
                 from classroom as c join classroom_qtd_students as q
                 on c.school_inep_fk = q.school_inep_fk
-                where c.school_year = ".$this->year." AND q.school_year = ".$this->year." and c.school_inep_fk = ".$_GET['id']." AND q.school_inep_fk = ".$_GET['id']."  AND c.id = q.id
+                where c.school_year = ".$this->year." AND q.school_year = ".$this->year." and c.school_inep_fk = ".$_GET['id']." AND q.school_inep_fk = ".$_GET['id']."  AND c.id = q.id AND (q.status = 1 OR q.status IS NULL)
                 order by name";
 
         $classrooms = Yii::app()->db->createCommand($sql)->queryAll();
 
         $sql1 = "SELECT se.classroom_fk,si.inep_id,si.name,si.birthday , si.filiation_1, si.filiation_2
                 FROM (student_identification as si join student_enrollment as se on si.id = se.student_fk join classroom as c on se.classroom_fk = c.id )
-                where se.school_inep_id_fk =".$_GET['id']." and c.school_year = ".$this->year." order by si.name ";
+                where se.school_inep_id_fk =".$_GET['id']." and c.school_year = ".$this->year." AND (se.status = 1 OR se.status IS NULL) order by si.name ";
 
         $students = Yii::app()->db->createCommand($sql1)->queryAll();
 
@@ -264,7 +269,7 @@ class ReportsController extends Controller {
 
         $sql1 = "SELECT se.classroom_fk,si.inep_id,si.name,si.birthday
                 FROM (student_identification as si join student_enrollment as se on si.id = se.student_fk ) join classroom as c on se.classroom_fk = c.id
-                where c.school_year = ".$this->year." AND se.school_inep_id_fk = ".$_GET['id']." ";
+                where c.school_year = ".$this->year." AND se.school_inep_id_fk = ".$_GET['id']." AND (se.status = 1 OR se.status IS NULL)";
 
         $students = Yii::app()->db->createCommand($sql1)->queryAll();
 
@@ -404,8 +409,9 @@ class ReportsController extends Controller {
         $sql = "SELECT 
                     e.name as school_name, c.name as classroom_name, c.id as classroom_id, d.cns, s.*
                 FROM 
-                    classroom as c 
-                    INNER JOIN student_identification as s on c.school_inep_fk = s.school_inep_id_fk
+                    student_enrollment as se
+                    INNER JOIN classroom as c on se.classroom_fk=c.id
+                    INNER JOIN student_identification as s on s.id=se.student_fk
                     INNER JOIN school_identification as e on c.school_inep_fk = e.inep_id
                     LEFT JOIN student_documents_and_address as d on s.id = d.student_fk
 
@@ -540,7 +546,7 @@ class ReportsController extends Controller {
                 . 'AND t.given_class = 1 '//0 não, 1 sim
                 . 'AND c.school_inep_fk = :school ',
                 array(":year" => $year, ":monthI" => $monthI, ":monthF" => $monthF, ":school" => Yii::app()->user->school));
-        $command->group = "c.id, t.month, si.id";
+        $command->group = "c.id, t.month, si.id, cf.faults";
         $command->order = "student, month";
         $query = $command->queryAll();
 
@@ -594,7 +600,7 @@ class ReportsController extends Controller {
         JOIN student_identification su ON(su.id= se.student_fk)
         WHERE
         bf_participator = 1 AND
-        si.`inep_id` =".Yii::app()->user->school." order by name;";
+        si.`inep_id` =".Yii::app()->user->school." AND (se.status = 1 OR se.status IS NULL) order by name;";
 
                 $result = Yii::app()->db->createCommand($sql)->queryAll();
                 $this->render('BFRStudentReport', array(
